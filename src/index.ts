@@ -1,6 +1,6 @@
 import { createWebSocketStream, WebSocketServer } from 'ws';
 import { BASE_URL } from './constants.js';
-import { handleCommands } from './handler.js';
+import handleCommands from './handlers/index.js';
 import { parseData } from './helpers.js';
 import { httpServer } from './http_server/index.js';
 

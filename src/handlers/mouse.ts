@@ -1,5 +1,6 @@
 import { down, left, mouse, right, up } from '@nut-tree/nut-js';
-import { MainCommand, SubCommand } from './types.js';
+import { ERRORS } from '../constants.js';
+import { SubCommand } from '../types.js';
 
 const handleMouseCommand = async (subCommand: SubCommand, params: number[]) => {
   if (!params.length) {
@@ -7,7 +8,7 @@ const handleMouseCommand = async (subCommand: SubCommand, params: number[]) => {
       const point = await mouse.getPosition();
       return `${point.x},${point.y}`;
     } else {
-      throw new Error('Warning! Params were expected.');
+      throw new Error(ERRORS.noParams);
     }
   } else {
     const [step] = params;
@@ -29,14 +30,4 @@ const handleMouseCommand = async (subCommand: SubCommand, params: number[]) => {
   }
 };
 
-export const handleCommands = async (
-  mainCommand: MainCommand,
-  subCommand: SubCommand,
-  params: number[],
-) => {
-  switch (mainCommand) {
-    case 'mouse': {
-      return await handleMouseCommand(subCommand, params);
-    }
-  }
-};
+export default handleMouseCommand;
