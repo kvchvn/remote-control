@@ -1,6 +1,7 @@
-import { WebSocketServer } from 'ws';
+import { createWebSocketStream, WebSocketServer } from 'ws';
+import { BASE_URL } from './constants.js';
 import { handleCommands } from './handler.js';
-import { parseRawData } from './helpers.js';
+import { parseData } from './helpers.js';
 import { httpServer } from './http_server/index.js';
 
 const HTTP_PORT = 8181;
@@ -11,20 +12,24 @@ httpServer.listen(HTTP_PORT);
 const wss = new WebSocketServer({ port: 8080 });
 
 wss.on('connection', (ws) => {
-  ws.on('message', (rawData) => {
-    const { mainCommand, subCommand, params, formattedRawData } = parseRawData(rawData);
+  ws.send(`Connected_to_${BASE_URL}`);
+  const wsStream = createWebSocketStream(ws, { encoding: 'utf-8' });
+
+  wsStream.on('data', (data: string) => {
+    console.log(data);
+    const { mainCommand, subCommand, params } = parseData(data);
 
     handleCommands(mainCommand, subCommand, params)
-      .then((resultMessage) => {
-        const answer = resultMessage ? `${formattedRawData} ${resultMessage}` : formattedRawData;
+      .then((result) => {
+        const answer = result ? `${data} ${result}` : data;
         ws.send(answer);
       })
-      .catch((err) => console.log(err));
-
-    //ws.send(`\n${data.toString().replace(' ', '_')}`);
+      .catch((err: Error) => console.log(`ERROR! ${err.message}`));
   });
 
-  ws.send('Connected_to_wss');
+  wsStream.on('error', (err) => {
+    console.log(`ERROR! ${err.message}`);
+  });
 });
 
 process.on('SIGINT', () => process.exit());
