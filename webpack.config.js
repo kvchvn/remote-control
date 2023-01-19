@@ -24,7 +24,12 @@ export default {
       {
         test: /\.ts$/,
         use: ['ts-loader'],
+        exclude: /node_modules/,
       },
     ],
   },
+  externals: {
+    bufferutil: 'bufferutil',
+    "utf-8-validate": 'utf-8-validate',
+  }
 };
