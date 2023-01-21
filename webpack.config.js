@@ -1,4 +1,4 @@
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,12 +24,11 @@ export default {
       {
         test: /\.ts$/,
         use: ['ts-loader'],
-        exclude: /node_modules/,
       },
     ],
   },
   externals: {
     bufferutil: 'bufferutil',
-    "utf-8-validate": 'utf-8-validate',
-  }
+    'utf-8-validate': 'utf-8-validate',
+  },
 };
