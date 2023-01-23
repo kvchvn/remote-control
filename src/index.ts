@@ -1,6 +1,6 @@
 import Jimp from 'jimp';
 import { createWebSocketStream, WebSocketServer } from 'ws';
-import { BASE_URL, PRINT_SCREEN_HEIGHT, PRINT_SCREEN_WIDTH } from './constants.js';
+import {BASE_URL, PRINT_SCREEN_HEIGHT, PRINT_SCREEN_WIDTH, WS_PORT} from './constants.js';
 import handleCommands from './handlers/index.js';
 import { parseData } from './helpers.js';
 import { httpServer } from './http_server/index.js';
@@ -10,7 +10,13 @@ const HTTP_PORT = 8181;
 console.log(`Start static http server on the ${HTTP_PORT} port!`);
 httpServer.listen(HTTP_PORT);
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: WS_PORT }, () => {
+  console.log(`WebSocket is opened on the ${WS_PORT} port!`);
+});
+
+process.on('SIGINT', () => process.exit());
+
+process.on('exit', () => wss.close());
 
 wss.on('connection', (ws) => {
   ws.send(`Connected_to_${BASE_URL}`);
@@ -50,5 +56,3 @@ wss.on('connection', (ws) => {
     console.log(`ERROR! ${err.message}`);
   });
 });
-
-process.on('SIGINT', () => process.exit());
